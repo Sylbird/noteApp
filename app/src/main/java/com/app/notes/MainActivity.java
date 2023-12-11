@@ -7,9 +7,13 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.CompoundButton;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -59,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
 
         boolean isNightModeOn = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES;
         switchBtn.setChecked(isNightModeOn);
+
+        FloatingActionButton addTaskButton = findViewById(R.id.addTaskButton);
+        addTaskButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Crear un Intent para iniciar NoteCreationActivity
+                Intent intent = new Intent(MainActivity.this, NoteCreationActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
