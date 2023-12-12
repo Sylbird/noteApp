@@ -11,12 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
@@ -98,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 Note initialNote = realm.createObject(Note.class, 1);
                 initialNote.setTitle("Sample Title");
                 initialNote.setContent("This is a sample note content.");
-                initialNote.setCreatedTime(23232323L);
+                initialNote.setCreatedTime(1678828800000L);
             });
         }
     }

@@ -3,9 +3,8 @@ package com.app.notes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import io.realm.Realm;
@@ -23,17 +22,15 @@ public class NoteCreationActivity extends AppCompatActivity {
 
         etTitle = findViewById(R.id.editTextTitle);
         etContent = findViewById(R.id.editTextContent);
-        Button btnSaveNote = findViewById(R.id.buttonSaveNote);
+        ImageButton btnSaveNote = findViewById(R.id.buttonSaveNote);
+        ImageButton btnGoBack = findViewById(R.id.buttonGoBack);
 
         // Inicializar Realm
         realm = Realm.getDefaultInstance();
 
-        btnSaveNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                guardarNota();
-            }
-        });
+        btnSaveNote.setOnClickListener(v -> guardarNota());
+
+        btnGoBack.setOnClickListener(view -> finish());
     }
 
     private void guardarNota() {
@@ -46,14 +43,11 @@ public class NoteCreationActivity extends AppCompatActivity {
             long nextId = (currentIdNum != null) ? currentIdNum.longValue() + 1 : 1;
 
             // Crear una nueva nota en Realm
-            realm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    Note newNote = realm.createObject(Note.class, nextId);
-                    newNote.setTitle(title);
-                    newNote.setContent(content);
-                    newNote.setCreatedTime(System.currentTimeMillis());
-                }
+            realm.executeTransactionAsync(realm -> {
+                Note newNote = realm.createObject(Note.class, nextId);
+                newNote.setTitle(title);
+                newNote.setContent(content);
+                newNote.setCreatedTime(System.currentTimeMillis());
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
