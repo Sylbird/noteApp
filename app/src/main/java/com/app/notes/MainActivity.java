@@ -15,6 +15,7 @@ import android.view.View;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize realm
         Realm.init(getApplicationContext());
+        // Setup config to allow writeOnUI
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .allowWritesOnUiThread(true)
+                .build();
+        Realm.setDefaultConfiguration(config);
+        //
         realm = Realm.getDefaultInstance();
 
         // Add an initial note to Realm

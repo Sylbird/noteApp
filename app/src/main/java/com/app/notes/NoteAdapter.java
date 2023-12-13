@@ -1,12 +1,14 @@
 package com.app.notes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
@@ -37,6 +39,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
         String formatedTime = DateFormat.getDateTimeInstance().format(note.createdTime);
         holder.noteTimeStamp.setText(formatedTime);
+
+        // Set a click listener for the entire note view
+        holder.cardViewNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle the click event here, for example, open the EditNoteActivity
+                Note clickedNote = listNotes.get(holder.getAdapterPosition());
+                Intent intent = new Intent(context, NoteEditActivity.class);
+                intent.putExtra("noteId", clickedNote.getId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -49,9 +63,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         TextView noteTitle;
         TextView noteContent;
         TextView noteTimeStamp;
+        CardView cardViewNote;
 
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardViewNote = itemView.findViewById(R.id.cardViewNote);
             noteTitle = itemView.findViewById(R.id.textNoteTitle);
             noteContent = itemView.findViewById(R.id.textNoteContent);
             noteTimeStamp = itemView.findViewById(R.id.textNoteTimestamp);

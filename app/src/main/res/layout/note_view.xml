@@ -1,38 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:padding="10dp"
-             android:layout_marginBottom="10dp"
-    android:background="@drawable/bg_note"
-    >
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardViewNote"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
 
-    <TextView
-        android:id="@+id/textNoteTitle"
+    android:clickable="true"
+    android:focusable="true"
+
+    app:cardBackgroundColor="#00FFFFFF"
+    app:cardElevation="0dp">
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title"
-        android:textColor="@color/text"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_note"
+        android:padding="10dp">
 
         <TextView
-            android:layout_below="@id/textNoteTitle"
+            android:id="@+id/textNoteTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:textColor="@color/text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/textNoteContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/textNoteTitle"
             android:layout_marginTop="5dp"
-            android:textColor="@android:color/darker_gray"
-            android:hint="content"/>
+            android:hint="content"
+            android:textColor="@android:color/darker_gray" />
 
         <TextView
-            android:layout_below="@id/textNoteContent"
             android:id="@+id/textNoteTimestamp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/textNoteContent"
             android:layout_marginTop="5dp"
-            android:textColor="@android:color/darker_gray"
             android:gravity="end"
-            android:hint="12/10/2023"/>
+            android:hint="12/10/2023"
+            android:textColor="@android:color/darker_gray" />
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
