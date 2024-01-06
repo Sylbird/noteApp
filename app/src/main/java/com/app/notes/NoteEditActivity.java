@@ -3,7 +3,6 @@ package com.app.notes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -43,34 +42,24 @@ public class NoteEditActivity extends AppCompatActivity {
 
         // Check if the note exists
         if (note != null) {
-            // Populate your UI with note details (EditText for title, content, etc.)
+            // Populate activity_note_edit.xml with the note details (EditText for title, content, etc.)
             titleEditText = findViewById(R.id.noteEdit_editTextTitle);
             contentEditText = findViewById(R.id.noteEdit_editTextContent);
 
             titleEditText.setText(note.getTitle());
             contentEditText.setText(note.getContent());
         } else {
-            // Handle the case where the note doesn't exist
-            // You might want to display an error message or finish the activity
             finish();
         }
     }
-    // Save button click event
+
     private void onSaveClick() {
         // Update the note with the edited data on the UI thread
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        note.setTitle(titleEditText.getText().toString());
-                        note.setContent(contentEditText.getText().toString());
-                        note.setCreatedTime(System.currentTimeMillis());
-                    }
-                });
-            }
-        });
+        runOnUiThread(() -> realm.executeTransaction(realm -> {
+            note.setTitle(titleEditText.getText().toString());
+            note.setContent(contentEditText.getText().toString());
+            note.setCreatedTime(System.currentTimeMillis());
+        }));
         Toast.makeText(NoteEditActivity.this, "Nota modificada.", Toast.LENGTH_SHORT).show();
         // Finish the activity
         finish();
@@ -79,12 +68,7 @@ public class NoteEditActivity extends AppCompatActivity {
     // Delete button click event
     public void onDeleteClick() {
         // Delete the note from Realm
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                note.deleteFromRealm();
-            }
-        });
+        realm.executeTransaction(realm -> note.deleteFromRealm());
         Toast.makeText(NoteEditActivity.this, "Nota eliminada.", Toast.LENGTH_SHORT).show();
         // Finish the activity
         finish();

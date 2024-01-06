@@ -25,6 +25,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         this.listNotes = listNotes;
     }
 
+    // Loads note_view.xml into Recycle view
     @NonNull
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -44,7 +45,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         holder.cardViewNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle the click event here, for example, open the EditNoteActivity
+                // Handle the click event here
                 Note clickedNote = listNotes.get(holder.getAdapterPosition());
                 Intent intent = new Intent(context, NoteEditActivity.class);
                 intent.putExtra("noteId", clickedNote.getId());

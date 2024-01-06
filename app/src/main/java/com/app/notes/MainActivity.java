@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -32,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize realm
         Realm.init(getApplicationContext());
+
         // Setup config to allow writeOnUI
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .allowWritesOnUiThread(true)
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         listNotes.addChangeListener(notes -> noteAdapter.notifyDataSetChanged());
 
+        // Night Mode
         sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
         NightMode = sharedPreferences.getInt("NightModeInt", 1);
         AppCompatDelegate.setDefaultNightMode(NightMode);
@@ -70,13 +71,10 @@ public class MainActivity extends AppCompatActivity {
         switchBtn.setChecked(isNightModeOn);
 
         FloatingActionButton addTaskButton = findViewById(R.id.addTaskButton);
-        addTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Crear un Intent para iniciar NoteCreationActivity
-                Intent intent = new Intent(MainActivity.this, NoteCreationActivity.class);
-                startActivity(intent);
-            }
+        addTaskButton.setOnClickListener(v -> {
+            // Create intent to start NoteCreationActivity
+            Intent intent = new Intent(MainActivity.this, NoteCreationActivity.class);
+            startActivity(intent);
         });
 
     }
