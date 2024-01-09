@@ -10,8 +10,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -23,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int NightMode;
     private Realm realm;
     private SharedPreferences sharedPreferences;
+    private final String TAG = this.getClass().getCanonicalName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +86,37 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        FloatingActionButton syncJsonButton = findViewById(R.id.syncJsonButton);
+        syncJsonButton.setOnClickListener(v -> {
+            HttpService.get("http://10.0.2.2:3000/Notes", new HttpService.OnResponseListener() {
+                @Override
+                public void onResponse(String response) {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            // Replace the existing notes with the new ones from the JSON response
+                            realm.executeTransactionAsync(realm -> {
+                                // Convert the JSON response to a list of Note objects
+                                Type listType = new TypeToken<ArrayList<Note>>(){}.getType();
+
+                                List<Note> notes = new Gson().fromJson(response, listType);
+
+                                // Clear the existing notes
+                                realm.delete(Note.class);
+
+                                // Add the new notes to Realm
+                                for (Note note : notes) {
+                                    realm.insert(note);
+                                }
+                            });
+                            Toast.makeText(MainActivity.this,"Sincronizacion Exitosa!.",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        });
     }
 
     @Override
@@ -94,11 +134,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void addInitialNote() {
         // Check if the note already exists
-        if (realm.where(Note.class).equalTo("id", 1).findFirst() == null) {
+        if (realm.where(Note.class).equalTo("id", 0).findFirst() == null) {
             // Start a Realm transaction
             realm.executeTransactionAsync(realm -> {
                 // Create a new note
-                Note initialNote = realm.createObject(Note.class, 1);
+                Note initialNote = realm.createObject(Note.class,0);
                 initialNote.setTitle("Sample Title");
                 initialNote.setContent("This is a sample note content.");
                 initialNote.setCreatedTime(1678828800000L);
