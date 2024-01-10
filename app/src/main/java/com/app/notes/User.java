@@ -4,15 +4,15 @@ public class User {
 
     private String id;
     private String nombre;
-    private String contraseña;
+    private String contrasena;
 
     public User(){
 
     }
-    public User(String id, String nombre, String contraseña) {
+    public User(String id, String nombre, String contrasena) {
         this.id = id;
         this.nombre = nombre;
-        this.contraseña = contraseña;
+        this.contrasena = contrasena;
     }
 
     public String getId() {
@@ -31,19 +31,19 @@ public class User {
         this.nombre = nombre;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
 
 
     // Método para verificar la contraseña
-    public boolean verificarContraseña(String contraseña) {
-        return this.contraseña.equals(contraseña);
+    public boolean verificarContrasena(String contrasena) {
+        return this.contrasena.equals(contrasena);
     }
 
 

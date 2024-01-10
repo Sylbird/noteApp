@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -61,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
 
         listNotes.addChangeListener(notes -> noteAdapter.notifyDataSetChanged());
 
-        // Night Mode
+        // Get NightMode from SharedPreferences if it exists
         sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
         NightMode = sharedPreferences.getInt("NightModeInt", 1);
         AppCompatDelegate.setDefaultNightMode(NightMode);
 
+        // Switch Night Mode
         SwitchCompat switchBtn = findViewById(R.id.switch_dayNight);
-
         switchBtn.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (isChecked){
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -75,10 +75,11 @@ public class MainActivity extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
         });
-
+        // Check if Night Mode is ON
         boolean isNightModeOn = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES;
         switchBtn.setChecked(isNightModeOn);
 
+        // Adding Listeners for Buttons
         FloatingActionButton addTaskButton = findViewById(R.id.addTaskButton);
         addTaskButton.setOnClickListener(v -> {
             // Create intent to start NoteCreationActivity
@@ -88,34 +89,30 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton syncJsonButton = findViewById(R.id.syncJsonButton);
         syncJsonButton.setOnClickListener(v -> {
-            HttpService.get("http://10.0.2.2:3000/Notes", new HttpService.OnResponseListener() {
-                @Override
-                public void onResponse(String response) {
+            HttpService.get("http://10.0.2.2:3000/Notes", response -> runOnUiThread(() -> {
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                // Replace the existing notes with the new ones from the JSON response
+                realm.executeTransactionAsync(realm -> {
+                    // Convert the JSON response to a list of Note objects
+                    Type listType = new TypeToken<ArrayList<Note>>(){}.getType();
 
-                            // Replace the existing notes with the new ones from the JSON response
-                            realm.executeTransactionAsync(realm -> {
-                                // Convert the JSON response to a list of Note objects
-                                Type listType = new TypeToken<ArrayList<Note>>(){}.getType();
+                    List<Note> notes = new Gson().fromJson(response, listType);
 
-                                List<Note> notes = new Gson().fromJson(response, listType);
+                    // Clear the existing notes
+                    realm.delete(Note.class);
 
-                                // Clear the existing notes
-                                realm.delete(Note.class);
+                    // Add the notes from the JSON response
+                    for (Note note : notes) {
+                        realm.insert(note);
+                    }
+                });
+                Toast.makeText(MainActivity.this,"Sincronizacion Exitosa!.",Toast.LENGTH_SHORT).show();
+            }));
+        });
 
-                                // Add the new notes to Realm
-                                for (Note note : notes) {
-                                    realm.insert(note);
-                                }
-                            });
-                            Toast.makeText(MainActivity.this,"Sincronizacion Exitosa!.",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
+        ImageButton logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(v -> {
+            logout();
         });
     }
 
@@ -123,8 +120,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        // Get NightMode from AppCompatDelegate
         NightMode = AppCompatDelegate.getDefaultNightMode();
-
+        // Save NightMode to SharedPreferences
         sharedPreferences = getSharedPreferences("SharedPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -144,6 +142,21 @@ public class MainActivity extends AppCompatActivity {
                 initialNote.setCreatedTime(1678828800000L);
             });
         }
+    }
+
+    private void logout() {
+        // Acceder a SharedPreferences y eliminar la información de inicio de sesión
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("username");
+        editor.remove("password");
+        editor.putBoolean("isLoggedIn", false); // Actualizar el estado de inicio de sesión
+        editor.apply();
+
+        // Redirigir a LoginActivity
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
     @Override
     protected void onDestroy() {
