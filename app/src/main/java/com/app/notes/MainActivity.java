@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         RealmResults<Note> listNotes = realm.where(Note.class).findAll();
         RecyclerView recyclerView = findViewById(R.id.notesContainer);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        NoteAdapter noteAdapter = new NoteAdapter(getApplicationContext(),listNotes);
+        NoteAdapter noteAdapter = new NoteAdapter(MainActivity.this,listNotes);
         recyclerView.setAdapter(noteAdapter);
 
         listNotes.addChangeListener(notes -> noteAdapter.notifyDataSetChanged());
